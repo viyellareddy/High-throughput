@@ -262,3 +262,59 @@ for i, operon in enumerate(operons):
 
 The results of the operon predictions for each genome will be printed to the console, listing the genes within each identified operon.
 
+
+
+# Assignment 4: Motif Finding with Position Weight Matrix (PWM)
+
+## Overview
+This project focuses on motif finding using a Position Weight Matrix (PWM) to analyze the binding sites of the transcription factor argR. The goal is to compute the frequency and weight matrices from a provided counts matrix, and then use these matrices to identify potential binding sites in the upstream regulatory regions of genes. The results include the top 30 gene IDs that show the highest similarity to the argR binding motif.
+
+## Requirements
+- Python 3.x
+- Pandas
+- NumPy
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone <repository_url>
+   cd <repository_name>
+   ```
+
+2. Install the required packages:
+   ```bash
+   pip install pandas numpy
+   ```
+
+## Files
+- `argR-counts-matrix.txt`: Contains the counts matrix representing the frequency of each base at specified positions derived from 27 documented binding sites.
+- `E_coli_K12_MG1655.400_50`: Contains upstream regulatory regions of genes in FASTA format, including Gene IDs and corresponding sequences.
+- `motif_finding.py`: The main Python script that performs the motif finding analysis.
+
+## Usage
+1. Ensure that the input files (`argR-counts-matrix.txt` and `E_coli_K12_MG1655.400_50`) are in the same directory as `motif_finding.py`.
+
+2. Run the script:
+   ```bash
+   python motif_finding.py
+   ```
+
+3. The output will display the top 30 gene IDs with their corresponding scores, indicating the strength of binding site similarity to the argR motif.
+
+## Code Explanation
+1. **Loading Data**: The counts matrix is loaded and processed to compute the frequency matrix \( F(b, j) \) with pseudocounts added to avoid logarithmic issues.
+
+2. **Frequency Matrix Calculation**:
+   - A pseudocount of +1 is added to each count to calculate the adjusted frequency matrix \( F'(b, j) \).
+   - The background frequency is assumed to be 0.25 for all bases.
+
+3. **Weight Matrix Computation**: The weight matrix is calculated using the log-odds ratio of the frequency matrix to the background frequency.
+
+4. **Scanning for Binding Sites**:
+   - The upstream sequences of genes are read, and each sequence is scanned for potential argR binding motifs.
+   - The highest motif scores are recorded for each gene.
+
+5. **Results Output**: The top 30 gene IDs are sorted and displayed based on their motif scores.
+
+## Conclusion
+This project provides insights into the binding behavior of the argR transcription factor, aiding in the understanding of gene regulation mechanisms. The identified binding sites can serve as a foundation for further experimental validation and biological studies.
