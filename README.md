@@ -163,3 +163,102 @@ You will receive two files containing the gene ontology of the top and bottom ge
 
 The results of the half-life calculations and the average values are stored in the `average_half_life` variable. The identified top and bottom genes are saved in `top_genes.txt` and `bottom_genes.txt`, respectively.
 
+
+# Assignment 3: Operon Prediction
+
+## Objective
+
+The objective of this assignment is to predict operons, defined as the longest contiguous multi-gene transcriptional units, using PTT files for various genomes. Additionally, we will predict operons in a crop microbiome derived from the Hoatzin.
+
+### Genomes to Analyze
+
+1. **Escherichia coli K12**
+2. **Bacillus subtilis**
+3. **Halobacterium**
+4. **Synechocystis**
+
+### Additional Analysis
+
+- Predict operons in the crop microbiome from Hoatzin (IMG ID: 2088090036) using the attached GFF file. The first column comprises the contig, while the fourth and fifth columns represent the gene start and stop positions.
+
+## Data Files
+
+- **E_coli_K12_MG1655.ptt**
+- **B_subtilis_168.ptt**
+- **Halobacterium_NRC1.ptt**
+- **Synechocystis_PCC6803_uid159873.ptt**
+- **2088090036.gff** (for Hoatzin microbiome)
+
+## Code Implementation
+
+The following Python code performs the operon prediction using the provided datasets.
+
+### Step 1: Load PTT Data
+
+```python
+import pandas as pd
+
+# Load PTT data for Escherichia coli K12
+data1 = pd.read_csv('E_coli_K12_MG1655.ptt', sep='\t', skiprows=[0, 1])
+```
+
+### Step 2: Define Operon Prediction Function
+
+The function `predict_operons(data)` identifies operons based on the defined criteria.
+
+```python
+def predict_operons(data):
+    operons = []
+    current_operon = []
+    for _, row in data.iterrows():
+        if current_operon == []:
+            current_operon.append(row)
+        elif row['Strand'] == current_operon[-1]['Strand'] and int(row['Location'].split('..')[0]) - int(current_operon[-1]['Location'].split('..')[1]) < 50:
+            current_operon.append(row)
+        else:
+            operons.append(current_operon)
+            current_operon = [row]
+    operons.append(current_operon)
+    return operons
+```
+
+### Step 3: Predict Operons for Each Genome
+
+This section demonstrates how to predict operons for each genome.
+
+```python
+# Predict operons for Escherichia coli K12
+operons = predict_operons(data1)
+for i, operon in enumerate(operons):
+    print(f"Operon {i+1}: {', '.join(gene['Gene'] for gene in operon)}")
+```
+
+Repeat the above steps for **Bacillus subtilis**, **Halobacterium**, and **Synechocystis** by loading the respective PTT files and calling the `predict_operons` function.
+
+### Step 4: Load GFF Data for Hoatzin Crop Microbiome
+
+```python
+# Load GFF data for Hoatzin crop microbiome
+data = pd.read_csv('2088090036.gff', sep='\t', header=None, comment='#')
+data.columns = ['Contig', 'Source', 'Type', 'Start', 'End', 'Score', 'Strand', 'Phase', 'Attributes']
+# Sort data by contig and start position
+data = data.sort_values(['Contig', 'Start'])
+```
+
+### Step 5: Predict Operons in Hoatzin Data
+
+```python
+# Extract gene names from attributes column
+data['Gene'] = data['Attributes'].apply(lambda x: x.split(';')[0].split('=')[1])
+
+# Predict operons for Hoatzin data
+operons = predict_operons(data)
+# Print predicted operons
+for i, operon in enumerate(operons):
+    print(f"Operon {i+1}: {', '.join(row['Gene'] for row in operon)}")
+```
+
+## Results
+
+The results of the operon predictions for each genome will be printed to the console, listing the genes within each identified operon.
+
