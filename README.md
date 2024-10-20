@@ -318,3 +318,127 @@ This project focuses on motif finding using a Position Weight Matrix (PWM) to an
 
 ## Conclusion
 This project provides insights into the binding behavior of the argR transcription factor, aiding in the understanding of gene regulation mechanisms. The identified binding sites can serve as a foundation for further experimental validation and biological studies.
+
+
+# Assignment 5: Protein Interaction Network Analysis
+
+## Overview
+
+This assignment involves analyzing the human protein-protein interaction (PPI) network to calculate key network metrics such as degree, clustering coefficient, and shortest path lengths between nodes (proteins). We will also visualize the degree distribution to assess the network's scale-free structure and compare path length distributions between two sets of proteins using statistical tests.
+
+## Files Required
+
+1. **`Human-PPI.txt`**: A text file containing the edge list of the protein interaction network.
+2. **`Protein-list1.txt`**: A text file containing a list of proteins for the first set.
+3. **`Protein-list2.txt`**: A text file containing a list of proteins for the second set.
+
+## Dependencies
+
+The script requires the following Python packages:
+
+- `numpy`
+- `pandas`
+- `networkx`
+- `matplotlib`
+- `scipy`
+
+To install these packages, use the following command:
+
+```bash
+pip install numpy pandas networkx matplotlib scipy
+```
+
+1. **Network Metrics Calculation**: Computes the degree, clustering coefficient, and plots the degree distribution.
+2. **Shortest Path Length Analysis**: Calculates the shortest path lengths between nodes in the two provided protein lists and compares the distributions.
+
+## Code Explanation
+
+### Part 1: Network Metrics Calculation
+
+1. **Importing Libraries**:
+    ```python
+    import os
+    import networkx as nx
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    ```
+
+   - Imports necessary libraries for data manipulation, network analysis, and visualization.
+
+2. **Loading the Edge List**:
+    ```python
+    network_df = pd.read_csv('Human-PPI.txt', sep='\s+')
+    ```
+   - Loads the edge list of the PPI network into a pandas DataFrame.
+
+3. **Creating the Graph**:
+    ```python
+    graph = nx.Graph()
+    for _, row in network_df.iterrows():
+        graph.add_node(row['OFFICIAL_SYMBOL_A'])
+        graph.add_node(row['OFFICIAL_SYMBOL_B'])
+        graph.add_edge(row['OFFICIAL_SYMBOL_A'], row['OFFICIAL_SYMBOL_B'])
+    ```
+
+   - Initializes an undirected graph and adds nodes and edges based on the edge list.
+
+4. **Calculating Degree and Clustering Coefficient**:
+    ```python
+    degrees = nx.degree(graph)
+    clustering = nx.clustering(graph)
+    avg_clustering = nx.average_clustering(graph)
+    ```
+
+   - Computes the degree and clustering coefficient for each node and the average clustering coefficient of the network.
+
+5. **Degree Distribution Plot**:
+    ```python
+    degree_values = np.array(list(degrees.values()))
+    degree_freq = np.bincount(degree_values)
+    plt.loglog(np.arange(len(degree_freq)), degree_freq, 'o')
+    ```
+
+   - Extracts degree values and their frequency, then plots the degree distribution on a log-log scale to visualize the scale-free structure.
+
+### Part 2: Shortest Path Length Analysis
+
+1. **Loading Protein Lists**:
+    ```python
+    proteins1 = pd.read_csv('Protein-list1.txt')
+    proteins2 = pd.read_csv('Protein-list2.txt')
+    ```
+
+   - Loads the two protein lists into pandas DataFrames and renames columns for clarity.
+
+2. **Calculating Shortest Path Lengths**:
+    ```python
+    subgraph1_path_lengths = []
+    for i in range(len(proteins1)-1):
+        for j in range(i+1, len(proteins1)):
+            p1 = proteins1['protein A'][i]
+            p2 = proteins1['protein A'][j]
+            if p1 in list(graph.nodes()) and p2 in list(graph.nodes()):
+                subgraph1_path_lengths.append(len(nx.shortest_path(graph,p1,p2)))
+    ```
+
+   - Loops through each pair of proteins in the first list to compute the shortest path lengths. A similar process is followed for the second protein list.
+
+3. **Statistical Comparison of Path Length Distributions**:
+    ```python
+    from scipy.stats import ranksums
+    wilcoxon_test = ranksums(subgraph1_path_lengths, subgraph2_path_lengths)
+    ```
+
+   - Performs a Wilcoxon rank-sum test to compare the path length distributions between the two protein sets.
+
+## Outputs
+
+- The average clustering coefficient of the network is printed.
+- A log-log plot of the degree distribution is displayed.
+- The result of the Wilcoxon rank-sum test is printed, indicating whether there is a statistically significant difference between the path lengths of the two protein sets.
+
+## Conclusion
+
+This analysis provides insights into the structure of the human protein interaction network, its degree distribution, and the comparative analysis of shortest path lengths between different protein sets. The results can inform further studies in protein interactions and their biological significance.
+
