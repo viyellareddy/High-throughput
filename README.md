@@ -60,12 +60,6 @@ pip install pandas numpy seaborn scipy
 - **Heatmaps:** Created heatmaps to visualize the similarity between cancer types in each matrix.
 - **Comparison:** The Pearson correlation between the two correlation matrices is **0.2976**, indicating a moderate similarity between the miRNA expression patterns in the two datasets.
 
-### **Heatmaps:**
-1. **Heatmap of Matrix 1:**
-   ![Matrix 1 Heatmap](path/to/matrix1_heatmap.png)
-   
-2. **Heatmap of Matrix 2:**
-   ![Matrix 2 Heatmap](path/to/matrix2_heatmap.png)
 
 ### **Conclusion:**
 The moderate Pearson correlation (**0.2976**) between the two miRNA expression matrices suggests that there are some similarities in the cancer types' miRNA expression patterns, but they are not highly correlated. This may indicate biological differences in the datasets or varying levels of miRNA expression across the cancers.
